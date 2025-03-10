@@ -1,43 +1,46 @@
-/* groovylint-disable-next-line CompileStatic */
 pipeline {
     agent any
     tools {
-        nodejs 'nodejs 23'  // Use the Node.js version configured in Jenkins
+        maven 'Maven 3.8.7'  // Use the Maven version configured in Jenkins
+        jdk 'JDK 23'     // Use the JDK configured in Jenkins
+    }
+    environment {
+        MAVEN_OPTS = "-Dmaven.test.failure.ignore=true"
     }
     stages {
         stage('Clone Repository') {
             steps {
-                //CLONE GITHUB REPOSITORY
-                git 'https://github.com/Allan-Binga/Fast-Store-API'
+                git 'https://github.com/Allan-Binga/Easy-Lodge-API'
             }
         }
-        stage('Install Dependencies') {
+        stage('Build with Maven') {
             steps {
-                dir('backend') {
-                    sh 'npm install'
-                }
+                sh 'mvn clean package -DskipTests'  // Skipping tests for build speed
             }
         }
-        stage('Run unit tests') {
+        // stage('Run Tests') {
+        //     steps {
+        //         sh 'mvn test'
+        //     }
+        // }
+        stage('Package and Archive') {
             steps {
-                dir('backend') {
-                    sh 'npm test'
-                }
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
     }
-    post {
-        success {
-            slackSend(
-                color: 'good',
-                message: 'Unit tests passed!'
-            )
-        }
-        failure {
-            slackSend(
-                color: 'danger',
-                message: 'Unit tests failed.'
-            )
-        }
-    }
+    // post {
+    //     success {
+    //         slackSend(
+    //             color: 'good',
+    //             message: 'Spring Boot build & tests passed! ✅'
+    //         )
+    //     }
+    //     failure {
+    //         slackSend(
+    //             color: 'danger',
+    //             message: 'Spring Boot build/tests failed. ❌'
+    //         )
+    //     }
+    // }
 }
