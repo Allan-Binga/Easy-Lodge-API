@@ -13,27 +13,27 @@ pipeline {
                 git 'https://github.com/Allan-Binga/Easy-Lodge-API'
             }
         }
-        stage('Debug Environment') {
+        // stage('Debug Environment') {
+        //     steps {
+        //         sh 'echo $JAVA_HOME'
+        //     // sh '/var/jenkins_home/tools/hudson.model.JDK/JDK_23/bin/java -version'
+        //     }
+        // }
+        stage('Build with Maven') {
             steps {
-                sh 'echo $JAVA_HOME'
-            // sh '/var/jenkins_home/tools/hudson.model.JDK/JDK_23/bin/java -version'
+                sh 'mvn clean package -DskipTests'  // Skipping tests for build speed
             }
         }
-    // stage('Build with Maven') {
-    //     steps {
-    //         sh 'mvn clean package -DskipTests'  // Skipping tests for build speed
-    //     }
-    // }
-    // stage('Run Tests') {
-    //     steps {
-    //         sh 'mvn test'
-    //     }
-    // }
-    // stage('Package and Archive') {
-    //     steps {
-    //         archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-    //     }
-    // }
+        // stage('Run Tests') {
+        //     steps {
+        //         sh 'mvn test'
+        //     }
+        // }
+        stage('Package and Archive') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
     }
 // post {
 //     success {
