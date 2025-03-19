@@ -20,21 +20,26 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
-        stage('Build Docker Image') {
+        stage('Check docker version') {
             steps {
-                sh 'docker build -t allanbinga/hotelmanagement:v1 .'
+                sh 'docker -version'
             }
         }
-        stage('Login to DockerHub') {
-            steps{
-                sh 'echo $DOCKERHUB_CREDENTIALS | docker login -u $DOCKERHUB_CREDENTIALS --password-stdin'
-            }
-        }
-        stage('Push to DockerHUb') {
-            steps {
-                sh 'docker push allanbinga/hotelmanagement:v1'
-            }
-        }
+        // stage('Build Docker Image') {
+        //     steps {
+        //         sh 'docker build -t allanbinga/hotelmanagement:v1 .'
+        //     }
+        // }
+        // stage('Login to DockerHub') {
+        //     steps{
+        //         sh 'echo $DOCKERHUB_CREDENTIALS | docker login -u $DOCKERHUB_CREDENTIALS --password-stdin'
+        //     }
+        // }
+        // stage('Push to DockerHUb') {
+        //     steps {
+        //         sh 'docker push allanbinga/hotelmanagement:v1'
+        //     }
+        // }
     }
     post {
         success {
