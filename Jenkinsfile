@@ -6,6 +6,7 @@ pipeline {
     }
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=true'
+        DOCKERHUB_CREDENTIALS = credentials('allanbinga-dockerhub')
     }
     stages {
         stage('Clone Repository') {
@@ -13,24 +14,29 @@ pipeline {
                 git 'https://github.com/Allan-Binga/Easy-Lodge-API'
             }
         }
-        stage('Debug Environment') {
-            steps {
-                sh 'echo JAVA_HOME=$JAVA_HOME'
-                sh 'java -version'
-            }
-        }
+    
         stage('Build with Maven') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
-        stage('Package and Archive') {
+        stage('Build Docker Image') {
             steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                sh 'docker build -t allanbinga/hotelmanagement:v1 .'
+            }
+        }
+        stage('Login to DockerHub') {
+            steps{
+                sh 'echo $DOCKERHUB_CREDENTIALS | docker login -u $DOCKERHUB_CREDENTIALS --password-stdin'
+            }
+        }
+        stage('Push to DockerHUb') {
+            steps {
+                sh 'docker push allanbinga/hotelmanagement:v1'
             }
         }
     }
-    post {  // ✅ Correctly placed post block
+    post {
         success {
             slackSend(
                 channel: '#storeapi',
@@ -44,6 +50,9 @@ pipeline {
                 color: 'danger',
                 message: 'Something went wrong.'
             )
+        }
+        always {
+            sh 'docker logout'
         }
     }
 }
