@@ -29,5 +29,21 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
             }
         }
+        post {
+         success {
+                    slackSend(
+                        channel: '#storeapi',
+                        color: 'good',
+                        message: 'Eveything good.'
+                    )
+                }
+                failure {
+                    slackSend(
+                        channel: '#storeapi',
+                        color: 'danger',
+                        message: 'Everything good.'
+                    )
+                }
+        }
     }
 }
