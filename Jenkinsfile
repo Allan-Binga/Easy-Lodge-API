@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'Maven 3.8.7'
-        jdk 'JDK 17'
+        jdk 'JDK 23'
     }
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=true'
